@@ -1,0 +1,55 @@
+# ──────────────────────── 模型配置 ────────────────────────
+model:
+  # 骨干网络: "resnet" (推荐)
+  backbone: "resnet"
+  # 识别头: "ctc" (简单高效) 或 "attention" (精度更高)
+  head: "ctc"
+  # 特征维度 (骨干网络输出的通道数)
+  feature_dim: 256
+
+# ──────────────────────── 数据配置 ────────────────────────
+data:
+  # 字符集: 模型能识别的所有字符
+  charset: "0123456789abcdefghijklmnopqrstuvwxyz"
+  # 输入图片尺寸 (所有图片会被缩放到此大小)
+  image_height: 64
+  image_width: 160
+  # 图片通道数: 1=灰度, 3=彩色
+  image_channel: 1
+  # 最大标签长度 (验证码最多几个字符)
+  max_label_length: 10
+  # 数据集路径 (图片文件名格式: 标签_xxx.png, 如 a3Kp_001.png)
+  train_dir: "data/train"
+  val_dir: "data/val"
+
+# ──────────────────────── 训练配置 ────────────────────────
+train:
+  epochs: 100
+  batch_size: 128
+  # 学习率
+  lr: 0.001
+  # 权重衰减 (L2 正则化)
+  weight_decay: 0.0001
+  # 早停: 验证集准确率连续 N 个 epoch 不提升则停止
+  patience: 15
+  # 数据加载线程数
+  num_workers: 4
+  # 混合精度训练 (加速 + 省显存)
+  use_amp: true
+  # 梯度裁剪阈值
+  grad_clip: 5.0
+  # 模型保存路径
+  save_dir: "checkpoints"
+
+# ──────────────────────── 数据增强 ────────────────────────
+augment:
+  # 随机旋转角度范围
+  rotate_limit: 10
+  # 高斯模糊核大小上限
+  blur_limit: 3
+  # 高斯噪声
+  noise: true
+  # 透视变形
+  perspective: true
+  # 随机亮度对比度
+  brightness_contrast: true
