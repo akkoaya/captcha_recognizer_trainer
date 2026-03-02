@@ -1,35 +1,49 @@
-# Captcha Recognizer
+<h1 align="center">Captcha Recognizer Trainer</h1>
 
-基于 **PyTorch** 的现代验证码识别框架。采用 ResNet + CTC/Attention 架构，支持混合精度训练、ONNX 导出、丰富的数据增强。代码注释详尽，适合深度学习初学者阅读和学习。
+<p align="center">
+  <b>基于 PyTorch 的现代验证码识别框架</b>
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+  <img src="https://img.shields.io/badge/Python-3.8%2B-brightgreen.svg" alt="Python 3.8+">
+  <img src="https://img.shields.io/badge/PyTorch-2.0%2B-orange.svg" alt="PyTorch 2.0+">
+  <img src="https://img.shields.io/badge/ONNX-Supported-purple.svg" alt="ONNX Supported">
+</p>
+
+<p align="center">
+  采用 ResNet + CTC/Attention 架构，支持混合精度训练、ONNX 导出、丰富的数据增强。<br>
+  代码注释详尽，适合深度学习初学者阅读和学习。
+</p>
+
+---
+
+## 目录
+
+- [特性](#特性)
+- [模型架构](#模型架构)
+- [项目结构](#项目结构)
+- [快速开始](#快速开始)
+  - [环境要求](#环境要求)
+  - [安装](#安装)
+  - [生成训练数据](#生成训练数据)
+  - [训练](#训练)
+  - [推理](#推理)
+  - [导出 ONNX](#导出-onnx)
+- [配置说明](#配置说明)
+- [CTC vs Attention](#ctc-vs-attention)
+- [技术栈](#技术栈)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## 特性
 
-- **现代架构**: ResNet 残差骨干网络 + CTC / Transformer Attention 双模式识别头
-- **训练优化**: AdamW 优化器、OneCycleLR 学习率调度、混合精度 (AMP)、早停、梯度裁剪
-- **数据增强**: 基于 [Albumentations](https://github.com/albumentations-team/albumentations)，高效且可组合
-- **一键部署**: 导出 ONNX 格式，支持 ONNX Runtime / TensorRT 推理
-- **开箱即用**: 内置验证码生成工具，无需额外数据即可开始训练
-- **新手友好**: 所有 class 和关键逻辑均有中文注释
-
-## 项目结构
-
-```
-captcha_recognizer/
-├── config.yaml              # 配置文件 (模型/数据/训练/增强)
-├── train.py                 # 训练入口
-├── predict.py               # 推理脚本
-├── export_onnx.py           # ONNX 导出
-├── model/
-│   ├── backbone.py          # 骨干网络 (ResNet 风格 CNN)
-│   ├── head.py              # 识别头 (CTCHead / AttentionHead)
-│   └── recognizer.py        # 完整模型 (组合 backbone + head)
-├── data/
-│   ├── dataset.py           # PyTorch Dataset + 批次整理
-│   ├── augment.py           # 数据增强 (Albumentations)
-│   └── tokenizer.py         # 字符编解码器
-└── tools/
-    └── generate_captcha.py  # 验证码生成工具
-```
+- **现代架构** — ResNet 残差骨干网络 + CTC / Transformer Attention 双模式识别头
+- **训练优化** — AdamW 优化器、OneCycleLR 学习率调度、混合精度 (AMP)、早停、梯度裁剪
+- **数据增强** — 基于 [Albumentations](https://github.com/albumentations-team/albumentations)，高效且可组合
+- **一键部署** — 导出 ONNX 格式，支持 ONNX Runtime / TensorRT 推理
+- **开箱即用** — 内置验证码生成工具，无需额外数据即可开始训练
+- **新手友好** — 所有 class 和关键逻辑均有中文注释
 
 ## 模型架构
 
@@ -56,33 +70,55 @@ captcha_recognizer/
   预测结果          预测结果
 ```
 
+## 项目结构
+
+```
+captcha_recognizer_trainer/
+├── config.yaml              # 配置文件 (模型/数据/训练/增强)
+├── train.py                 # 训练入口
+├── predict.py               # 推理脚本
+├── export_onnx.py           # ONNX 导出
+├── model/
+│   ├── backbone.py          # 骨干网络 (ResNet 风格 CNN)
+│   ├── head.py              # 识别头 (CTCHead / AttentionHead)
+│   └── recognizer.py        # 完整模型 (组合 backbone + head)
+├── data/
+│   ├── dataset.py           # PyTorch Dataset + 批次整理
+│   ├── augment.py           # 数据增强 (Albumentations)
+│   └── tokenizer.py         # 字符编解码器
+└── tools/
+    └── generate_captcha.py  # 验证码生成工具
+```
+
 ## 快速开始
 
-### 1. 安装依赖
+### 环境要求
+
+- Python >= 3.8
+- PyTorch >= 2.0
+- CUDA (可选，推荐用于加速训练)
+
+### 安装
 
 ```bash
+git clone https://github.com/<your-username>/captcha_recognizer_trainer.git
+cd captcha_recognizer_trainer
 pip install -r requirements.txt
 ```
 
-### 2. 生成训练数据
+### 生成训练数据
 
 ```bash
 python tools/generate_captcha.py --num_train 20000 --num_val 2000
 ```
 
-生成的验证码示例:
-
-| 图片 | 标签 |
-|------|------|
-| ![captcha](https://via.placeholder.com/160x64?text=a3kp) | a3kp |
-
-### 3. 开始训练
+### 训练
 
 ```bash
 python train.py
 ```
 
-训练过程:
+训练过程示例输出:
 
 ```
 使用设备: cuda
@@ -100,7 +136,7 @@ Epoch 10 | 平均损失: 1.0234 | 验证准确率: 0.6500 | 学习率: 0.000950
 ...
 ```
 
-### 4. 推理
+### 推理
 
 ```bash
 # 识别单张图片
@@ -110,7 +146,7 @@ python predict.py test.png
 python predict.py data/val/
 ```
 
-### 5. 导出 ONNX
+### 导出 ONNX
 
 ```bash
 python export_onnx.py --model checkpoints/best.pth --output model.onnx
@@ -168,6 +204,18 @@ train:
 | 混合精度 | PyTorch AMP | FP16 加速 + 省显存 |
 | 部署格式 | ONNX | 跨平台通用格式 |
 
+## Contributing
+
+欢迎贡献代码! 请遵循以下步骤:
+
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'Add some amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 提交 Pull Request
+
+如果你发现了 Bug 或有新功能建议，欢迎提交 [Issue](../../issues)。
+
 ## License
 
-[MIT](LICENSE)
+本项目基于 [MIT License](LICENSE) 开源。
