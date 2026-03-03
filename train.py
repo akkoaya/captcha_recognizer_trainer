@@ -17,6 +17,7 @@ import os
 import argparse
 import yaml
 import torch
+from collections import defaultdict
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
@@ -38,10 +39,16 @@ def validate(model, val_loader, tokenizer, device, head_type):
 
     使用整体准确率: 整个验证码完全匹配才算对。
     例如真实标签 "a3kp"，预测 "a3kq"，算作错误。
+
+    同时统计各长度的准确率，便于分析不定长场景下的性能。
     """
     model.eval()
     correct = 0
     total = 0
+
+    # 按长度分组统计
+    length_correct = defaultdict(int)
+    length_total = defaultdict(int)
 
     with torch.no_grad():
         for images, targets, target_lengths, texts in val_loader:
@@ -50,12 +57,22 @@ def validate(model, val_loader, tokenizer, device, head_type):
 
             for pred, gt_text in zip(pred_indices, texts):
                 pred_text = tokenizer.decode(pred, mode=head_type)
+                gt_len = len(gt_text)
+                length_total[gt_len] += 1
                 if pred_text == gt_text:
                     correct += 1
+                    length_correct[gt_len] += 1
                 total += 1
 
     accuracy = correct / total if total > 0 else 0
-    return accuracy
+
+    # 构建各长度准确率字典
+    per_length_accuracy = {}
+    for length in sorted(length_total.keys()):
+        acc = length_correct[length] / length_total[length]
+        per_length_accuracy[length] = (acc, length_correct[length], length_total[length])
+
+    return accuracy, per_length_accuracy
 
 
 def train(config_path: str):
@@ -117,6 +134,31 @@ def train(config_path: str):
     )
 
     print(f"训练集: {len(train_dataset)} 张, 验证集: {len(val_dataset)} 张")
+
+    # 统计标签长度分布
+    train_length_dist = defaultdict(int)
+    for _, label_text in train_dataset.samples:
+        train_length_dist[len(label_text)] += 1
+    val_length_dist = defaultdict(int)
+    for _, label_text in val_dataset.samples:
+        val_length_dist[len(label_text)] += 1
+
+    is_variable_length = len(train_length_dist) > 1
+    if is_variable_length:
+        print("标签长度分布 (不定长模式):")
+        print(f"  训练集: ", end="")
+        for length in sorted(train_length_dist.keys()):
+            count = train_length_dist[length]
+            print(f"{length}字符={count}张", end="  ")
+        print()
+        print(f"  验证集: ", end="")
+        for length in sorted(val_length_dist.keys()):
+            count = val_length_dist[length]
+            print(f"{length}字符={count}张", end="  ")
+        print()
+    else:
+        fixed_len = list(train_length_dist.keys())[0]
+        print(f"标签长度: 固定 {fixed_len} 字符")
 
     # ═══════════════ 4. 构建模型 ═══════════════
     model = CaptchaRecognizer(config, tokenizer.vocab_size).to(device)
@@ -206,7 +248,7 @@ def train(config_path: str):
         avg_loss = total_loss / num_batches
 
         # ── 验证阶段 ──
-        accuracy = validate(model, val_loader, tokenizer, device, head_type)
+        accuracy, per_length_accuracy = validate(model, val_loader, tokenizer, device, head_type)
 
         print(
             f"Epoch {epoch} | "
@@ -214,6 +256,13 @@ def train(config_path: str):
             f"验证准确率: {accuracy:.4f} | "
             f"学习率: {scheduler.get_last_lr()[0]:.6f}"
         )
+
+        # 不定长模式下显示各长度的准确率
+        if len(per_length_accuracy) > 1:
+            parts = []
+            for length, (acc, correct_cnt, total_cnt) in per_length_accuracy.items():
+                parts.append(f"{length}字符={acc:.3f}({correct_cnt}/{total_cnt})")
+            print(f"  各长度准确率: {', '.join(parts)}")
 
         # ── 保存最优模型 ──
         if accuracy > best_accuracy:
