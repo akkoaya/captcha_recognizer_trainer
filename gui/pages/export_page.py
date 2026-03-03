@@ -6,8 +6,7 @@ ONNX 导出页面
 """
 
 import os
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPlainTextEdit, QFileDialog,
 )
 from qfluentwidgets import (

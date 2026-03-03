@@ -5,8 +5,8 @@
 按功能分为四个页面: 数据生成、模型训练、推理预测、ONNX 导出。
 """
 
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QApplication
 from qfluentwidgets import (
     FluentWindow,
     FluentIcon as FIF,
@@ -51,9 +51,9 @@ class MainWindow(FluentWindow):
         self.setWindowTitle("验证码识别训练器")
 
         # 居中显示
-        desktop = QApplication.desktop()
-        if desktop is not None:
-            rect = desktop.availableGeometry()
+        screen = QApplication.primaryScreen()
+        if screen is not None:
+            rect = screen.availableGeometry()
             self.move(
                 (rect.width() - self.width()) // 2,
                 (rect.height() - self.height()) // 2,
