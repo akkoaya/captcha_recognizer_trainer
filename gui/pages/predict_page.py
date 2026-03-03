@@ -6,9 +6,9 @@
 """
 
 import os
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import (
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QFileDialog,
     QPlainTextEdit, QLabel, QSizePolicy, QTableWidgetItem,
 )
@@ -118,14 +118,14 @@ class PredictPage(ScrollArea):
         preview_layout.addWidget(SubtitleLabel("预览"))
 
         self.preview_label = QLabel()
-        self.preview_label.setAlignment(Qt.AlignCenter)
+        self.preview_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.preview_label.setMinimumHeight(80)
         self.preview_label.setText("加载图片后显示预览")
         self.preview_label.setStyleSheet("color: #888;")
         preview_layout.addWidget(self.preview_label)
 
         self.result_label = BodyLabel("")
-        self.result_label.setAlignment(Qt.AlignCenter)
+        self.result_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         preview_layout.addWidget(self.result_label)
 
         layout.addWidget(preview_card)
@@ -218,7 +218,7 @@ class PredictPage(ScrollArea):
             pixmap = QPixmap(input_path)
             if not pixmap.isNull():
                 self.preview_label.setPixmap(
-                    pixmap.scaled(320, 120, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                    pixmap.scaled(320, 120, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
                 )
 
         self.worker = WorkerThread(

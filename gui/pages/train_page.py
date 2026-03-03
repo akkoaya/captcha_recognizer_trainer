@@ -7,8 +7,7 @@
 
 import os
 import yaml
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPlainTextEdit,
 )
 from qfluentwidgets import (
