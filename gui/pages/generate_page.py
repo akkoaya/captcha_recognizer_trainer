@@ -6,8 +6,7 @@
 """
 
 import os
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QFrame,
 )
 from qfluentwidgets import (
@@ -164,7 +163,7 @@ class GeneratePage(ScrollArea):
         log_layout.setContentsMargins(20, 16, 20, 16)
         log_layout.addWidget(SubtitleLabel("日志"))
 
-        from PyQt5.QtWidgets import QPlainTextEdit
+        from PyQt6.QtWidgets import QPlainTextEdit
         self.log_text = QPlainTextEdit()
         self.log_text.setReadOnly(True)
         self.log_text.setMinimumHeight(180)
