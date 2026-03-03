@@ -16,7 +16,11 @@ data:
   image_width: 160
   # 图片通道数: 1=灰度, 3=彩色
   image_channel: 1
-  # 最大标签长度 (验证码最多几个字符)
+  # 标签长度范围 (支持不定长验证码)
+  #   min_label_length: 验证码最少几个字符
+  #   max_label_length: 验证码最多几个字符
+  #   若 min = max, 则为固定长度模式
+  min_label_length: 4
   max_label_length: 10
   # 数据集路径 (图片文件名格式: 标签_xxx.png, 如 a3Kp_001.png)
   train_dir: "data/train"

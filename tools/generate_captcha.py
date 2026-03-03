@@ -4,10 +4,13 @@
 使用 captcha 库生成训练和验证数据集。
 生成的图片文件名格式: 标签_序号.png，如 a3kp_000001.png
 
+支持不定长验证码: 通过 --min_length 和 --max_length 控制字符数范围。
+
 用法:
-  python tools/generate_captcha.py                              # 使用默认参数
+  python tools/generate_captcha.py                              # 使用默认参数 (4~6字符)
   python tools/generate_captcha.py --num_train 50000 --num_val 5000
-  python tools/generate_captcha.py --charset "0123456789" --length 4
+  python tools/generate_captcha.py --charset "0123456789" --min_length 4 --max_length 4   # 固定4字符
+  python tools/generate_captcha.py --min_length 1 --max_length 8   # 1~8字符不定长
 """
 
 import os
@@ -75,7 +78,7 @@ def main():
         help="字符集",
     )
     parser.add_argument("--min_length", type=int, default=4, help="最小字符数")
-    parser.add_argument("--max_length", type=int, default=4, help="最大字符数")
+    parser.add_argument("--max_length", type=int, default=6, help="最大字符数 (与 min_length 不同时生成不定长验证码)")
     parser.add_argument("--width", type=int, default=160, help="图片宽度")
     parser.add_argument("--height", type=int, default=64, help="图片高度")
     args = parser.parse_args()
@@ -105,6 +108,10 @@ def main():
     print("\n数据集生成完毕!")
     print(f"  训练集: {args.train_dir}/ ({args.num_train} 张)")
     print(f"  验证集: {args.val_dir}/ ({args.num_val} 张)")
+    if args.min_length == args.max_length:
+        print(f"  长度: 固定 {args.min_length} 字符")
+    else:
+        print(f"  长度: {args.min_length}~{args.max_length} 字符 (不定长)")
     print(f"\n下一步: python train.py")
 
 
