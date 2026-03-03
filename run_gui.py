@@ -1,0 +1,37 @@
+"""
+验证码识别训练器 - GUI 启动入口
+
+使用 QFluentWidgets 构建的图形界面, 整合数据生成、模型训练、推理预测、ONNX 导出功能。
+
+用法:
+  python run_gui.py
+"""
+
+import sys
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication
+from qfluentwidgets import setTheme, Theme
+
+from gui.main_window import MainWindow
+
+
+def main():
+    # 高 DPI 适配
+    QApplication.setHighDpiScaleFactorRoundingPolicy(
+        Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
+    )
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
+
+    app = QApplication(sys.argv)
+
+    # 跟随系统主题
+    setTheme(Theme.AUTO)
+
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    main()
