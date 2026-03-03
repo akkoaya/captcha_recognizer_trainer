@@ -8,21 +8,13 @@
 """
 
 import sys
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication
 from qfluentwidgets import setTheme, Theme
 
 from gui.main_window import MainWindow
 
 
 def main():
-    # 高 DPI 适配
-    QApplication.setHighDpiScaleFactorRoundingPolicy(
-        Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
-    )
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
-
     app = QApplication(sys.argv)
 
     # 跟随系统主题
@@ -30,7 +22,7 @@ def main():
 
     window = MainWindow()
     window.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":
